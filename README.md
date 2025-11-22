@@ -61,5 +61,574 @@ This project was designed and built by:
 
 **Ayesha Raza [25bai10998]**
 
-📜 **License**
+📜 **License**<br>
 This project is open source and available for educational use.
+
+**SOURCE CODE:**
+```
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spectral | Hydrogen Atom Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; 
+            color: #e2e8f0;
+        }
+        
+        .mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        input[type=range] {
+            -moz-appearance: none;
+            -webkit-appearance: none; 
+            appearance: none;
+            background: transparent; 
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #38bdf8;
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+        }
+
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #334155;
+            border-radius: 2px;
+        }
+
+        /* Scrollbar for history */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    
+    <main class="w-full max-w-5xl grid grid-cols-1 lg:grid-cols-2 gap-8 bg-slate-800/50 p-6 rounded-2xl backdrop-blur-sm border border-slate-700 shadow-2xl">
+        
+        
+        <div class="flex flex-col space-y-6">
+            <header>
+                <div class="flex items-center space-x-2 mb-2">
+                    <span class="text-3xl">⚛️</span>
+                    <h1 class="text-2xl font-bold text-white tracking-tight">Spectral</h1>
+                </div>
+                <p class="text-slate-400 text-sm">Hydrogen Emission Line Calculator & Visualizer</p>
+            </header>
+
+            <div class="space-y-6 bg-slate-900/50 p-6 rounded-xl border border-slate-700/50">
+                
+                
+                <div>
+                    <label class="text-sm font-semibold text-slate-400 mb-2 block">Select Element (Ion)</label>
+                    <select id="input-element" class="w-full bg-slate-800 border border-slate-600 text-white text-sm rounded-lg focus:ring-sky-500 focus:border-sky-500 block p-2.5 font-mono">
+                        <option value="1">Hydrogen (H, Z=1)</option>
+                        <option value="2">Helium Ion (He⁺, Z=2)</option>
+                        <option value="3">Lithium Ion (Li²⁺, Z=3)</option>
+                        <option value="4">Beryllium Ion (Be³⁺, Z=4)</option>
+                    </select>
+                </div>
+
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-semibold text-sky-400">Destination Orbit (<span class="italic">n<sub>f</sub></span>)</label>
+                        <span id="val-nf" class="mono text-white font-bold">2</span>
+                    </div>
+                    <input type="range" id="input-nf" min="1" max="5" value="2" step="1" class="w-full">
+                    
+                    
+                    <div class="relative group w-fit mt-1">
+                        <p class="text-xs text-slate-400 border-b border-dotted border-slate-600 cursor-help transition-colors hover:text-sky-300" id="series-name">Balmer Series (Visible)</p>
+                        
+                        
+                        <div id="series-tooltip" class="absolute bottom-full left-0 mb-2 hidden group-hover:block w-48 bg-slate-800 text-slate-200 text-xs rounded-lg p-3 border border-slate-600 shadow-xl z-50 pointer-events-none">
+                            Transitions to n=2. This series produces the only visible light lines for Hydrogen.
+                        </div>
+                    </div>
+                </div>
+
+                
+                <div>
+                    <div class="flex justify-between mb-2">
+                        <label class="text-sm font-semibold text-rose-400">Starting Orbit (<span class="italic">n<sub>i</sub></span>)</label>
+                        <span id="val-ni" class="mono text-white font-bold">3</span>
+                    </div>
+                    <input type="range" id="input-ni" min="2" max="7" value="3" step="1" class="w-full">
+                    <p class="text-xs text-slate-500 mt-1">Must be higher than Destination</p>
+                </div>
+
+                <button id="btn-animate" class="w-full py-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold rounded-lg transition-all shadow-lg shadow-blue-900/20 flex items-center justify-center space-x-2">
+                    <span>Trigger Transition</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M8 0a8 8 0 1 1 0 16A8 8 0 0 1 8 0zM4.5 7.5a.5.5 0 0 0 0 1h5.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H4.5z"/>
+                    </svg>
+                </button>
+            </div>
+
+            
+            <div class="bg-black/40 p-6 rounded-xl border-l-4 border-gray-500" id="result-card">
+                <h3 class="text-gray-400 text-xs uppercase tracking-wider font-bold mb-2">Calculated Photon</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <p class="text-slate-400 text-xs">Wavelength (<span class="italic">λ</span>)</p>
+                        <p id="res-wavelength" class="text-2xl font-bold mono text-white">656.11 nm</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 text-xs">Frequency (<span class="italic">ν</span>)</p>
+                        <p id="res-frequency" class="text-xl mono text-white">4.57e14 Hz</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-slate-400 text-xs">Energy (<span class="italic">E</span>)</p>
+                        <p id="res-energy" class="text-xl mono text-white">3.03e-19 J</p>
+                    </div>
+                    <div class="col-span-2">
+                        <p class="text-slate-400 text-xs mb-1">Color</p>
+                        <div id="color-preview" class="h-8 w-full rounded bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)] transition-all duration-500 flex items-center justify-center text-xs font-bold text-black/70 uppercase tracking-widest">
+                            Red
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Experiment History</h3>
+                    <button id="btn-clear-history" class="text-[10px] text-slate-500 hover:text-white transition-colors uppercase tracking-wider">Clear Log</button>
+                </div>
+                <div class="max-h-32 overflow-y-auto custom-scrollbar rounded-lg border border-slate-700/50">
+                    <table class="w-full text-xs text-left text-slate-300">
+                        <thead class="bg-slate-800 text-slate-400 font-semibold sticky top-0">
+                            <tr>
+                                <th class="px-3 py-2">Jump</th>
+                                <th class="px-3 py-2">λ (nm)</th>
+                                <th class="px-3 py-2 text-right">Energy</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-list" class="divide-y divide-slate-700/50 bg-slate-800/30">
+                            <tr class="text-slate-500 italic text-center">
+                                <td colspan="3" class="py-3">Click "Trigger" to save data...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            
+            <div class="bg-slate-900/50 p-5 rounded-xl border border-slate-700/50">
+                <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Teammates</h3>
+                
+                <div class="flex flex-wrap gap-3">
+                    
+                    <div class="flex items-center space-x-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm hover:border-sky-500/50 transition-colors cursor-default">
+                        <div class="w-2 h-2 rounded-full bg-sky-400"></div>
+                        <span class="text-sm text-slate-200 font-mono">Dhirendra Kumar Thakur[25BAI10251]</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm hover:border-violet-500/50 transition-colors cursor-default">
+                        <div class="w-2 h-2 rounded-full bg-violet-400"></div>
+                        <span class="text-sm text-slate-200 font-mono">Mahi Vijay[25BAI10333]</span>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2 bg-slate-800 px-3 py-2 rounded-lg border border-slate-700 shadow-sm hover:border-rose-500/50 transition-colors cursor-default">
+                        <div class="w-2 h-2 rounded-full bg-rose-400"></div>
+                        <span class="text-sm text-slate-200 font-mono">Ayesha Raza[25BAI10998]</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        
+        <div class="relative bg-black rounded-xl overflow-hidden border border-slate-700 flex items-center justify-center aspect-square lg:aspect-auto">
+            <canvas id="atomCanvas" class="z-10"></canvas>
+            
+            
+            <div class="absolute inset-0 z-0 opacity-50" style="background-image: radial-gradient(white 1px, transparent 1px); background-size: 30px 30px;"></div>
+            
+            <div class="absolute bottom-4 right-4 z-20 bg-slate-900/80 px-3 py-1 rounded text-xs text-slate-400 border border-slate-700">
+                Bohr Model Visualization
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-8 text-slate-500 text-xs text-center">
+        <p>Designed for Physics & Chemistry Projects. Uses the Rydberg Formula.</p>
+    </footer>
+
+    <script>
+        (function() { 
+            const canvas = document.getElementById('atomCanvas');
+            const ctx = canvas.getContext('2d');
+            const R = 1.097373e7; 
+            const h = 6.626e-34;  
+            const c = 3.0e8;      
+    
+            
+            const selectElement = document.getElementById('input-element'); 
+            const sliderNf = document.getElementById('input-nf');
+            const sliderNi = document.getElementById('input-ni');
+            const valNf = document.getElementById('val-nf');
+            const valNi = document.getElementById('val-ni');
+            const seriesLabel = document.getElementById('series-name');
+            const seriesTooltip = document.getElementById('series-tooltip');
+            const btnAnimate = document.getElementById('btn-animate');
+            const btnClearHistory = document.getElementById('btn-clear-history'); 
+            const historyList = document.getElementById('history-list'); 
+    
+            
+            const resWavelength = document.getElementById('res-wavelength');
+            const resFrequency = document.getElementById('res-frequency'); 
+            const resEnergy = document.getElementById('res-energy');
+            const colorPreview = document.getElementById('color-preview');
+            const resultCard = document.getElementById('result-card');
+    
+            
+            let Z = 1; 
+            let n_final = 2;
+            let n_initial = 3;
+            let animationState = 'idle'; 
+            let electronAngle = 0;
+            let electronRadius = 0;
+            let targetRadius = 0;
+            let photonProgress = 0;
+            let computedWavelength = 0;
+            let computedEnergy = 0; 
+            let computedColor = '#FF0000';
+            let animationFrameId;
+    
+            
+            function resize() {
+                if (!canvas.parentElement) return;
+                const parent = canvas.parentElement;
+                canvas.width = parent.clientWidth;
+                canvas.height = parent.clientHeight;
+                drawAtom();
+            }
+            window.addEventListener('resize', resize);
+    
+            
+            function getSpectralColor(nm) {
+                if (nm < 380) return { color: '#4a044e', name: 'UV (Invisible)', class: 'border-fuchsia-900' }; // UV
+                if (nm >= 380 && nm < 450) return { color: '#7c3aed', name: 'Violet', class: 'border-violet-500' };
+                if (nm >= 450 && nm < 495) return { color: '#3b82f6', name: 'Blue', class: 'border-blue-500' };
+                if (nm >= 495 && nm < 570) return { color: '#22c55e', name: 'Green', class: 'border-green-500' };
+                if (nm >= 570 && nm < 590) return { color: '#eab308', name: 'Yellow', class: 'border-yellow-500' };
+                if (nm >= 590 && nm < 620) return { color: '#f97316', name: 'Orange', class: 'border-orange-500' };
+                if (nm >= 620 && nm < 750) return { color: '#ef4444', name: 'Red', class: 'border-red-500' };
+                return { color: '#7f1d1d', name: 'IR (Invisible)', class: 'border-red-900' }; // IR
+            }
+    
+            function calculate() {
+                
+                if (parseInt(sliderNi.value) <= parseInt(sliderNf.value)) {
+                    sliderNi.value = parseInt(sliderNf.value) + 1;
+                }
+    
+                Z = parseInt(selectElement.value); 
+                n_final = parseInt(sliderNf.value);
+                n_initial = parseInt(sliderNi.value);
+    
+                
+                valNf.innerText = n_final;
+                valNi.innerText = n_initial;
+    
+                
+                if (n_final === 1) {
+                    seriesLabel.innerText = "Lyman Series (Ultraviolet)";
+                    seriesTooltip.innerText = "Electron falls to n=1. Emits high-energy UV light (invisible to human eye).";
+                }
+                else if (n_final === 2) {
+                    seriesLabel.innerText = "Balmer Series (Visible)";
+                    seriesTooltip.innerText = "Electron falls to n=2. Emits visible light. These are the 4 colors we see in the lab.";
+                }
+                else if (n_final === 3) {
+                    seriesLabel.innerText = "Paschen Series (Infrared)";
+                    seriesTooltip.innerText = "Electron falls to n=3. Emits Infrared light (heat energy).";
+                }
+                else if (n_final === 4) {
+                    seriesLabel.innerText = "Brackett Series (Infrared)";
+                    seriesTooltip.innerText = "Electron falls to n=4. Emits lower energy Infrared light.";
+                }
+                else if (n_final === 5) {
+                    seriesLabel.innerText = "Pfund Series (Far Infrared)";
+                    seriesTooltip.innerText = "Electron falls to n=5. Emits very low energy Far-Infrared light.";
+                }
+                else {
+                    seriesLabel.innerText = "High Energy Series";
+                    seriesTooltip.innerText = "Transitions ending at high energy levels.";
+                }
+    
+               
+                const term = (Z ** 2) * ((1 / (n_final ** 2)) - (1 / (n_initial ** 2)));
+                const wavelengthM = 1 / (R * term);
+                const wavelengthNm = wavelengthM * 1e9;
+                const energy = (h * c) / wavelengthM;
+                const frequency = c / wavelengthM; 
+    
+                computedWavelength = wavelengthNm;
+                computedEnergy = energy;
+                
+                
+                resWavelength.innerText = wavelengthNm.toFixed(2) + " nm";
+                resFrequency.innerText = frequency.toExponential(2) + " Hz"; 
+                resEnergy.innerText = energy.toExponential(2) + " J";
+    
+                const spec = getSpectralColor(wavelengthNm);
+                computedColor = spec.color;
+                
+                colorPreview.style.backgroundColor = spec.color;
+                colorPreview.innerText = spec.name;
+                colorPreview.style.boxShadow = `0 0 20px ${spec.color}`;
+                resultCard.className = `bg-black/40 p-6 rounded-xl border-l-4 ${spec.class} transition-colors duration-300`;
+            }
+
+            
+            function addToHistory() {
+                
+                const emptyMsg = historyList.querySelector('.italic');
+                if (emptyMsg) emptyMsg.remove();
+
+                const row = document.createElement('tr');
+                row.className = "hover:bg-slate-700/50 transition-colors animate-fade-in";
+                
+                
+                const colorIndicator = `<span class="inline-block w-2 h-2 rounded-full mr-1" style="background-color: ${computedColor}"></span>`;
+                
+                row.innerHTML = `
+                    <td class="px-3 py-2 font-mono">
+                        <div class="flex items-center">
+                            ${colorIndicator}
+                            <span class="text-rose-400">${n_initial}</span>
+                            <span class="mx-1 text-slate-500">→</span>
+                            <span class="text-sky-400">${n_final}</span>
+                            <span class="text-[10px] text-slate-600 ml-1">(${Z === 1 ? 'H' : 'Z'+Z})</span>
+                        </div>
+                    </td>
+                    <td class="px-3 py-2 font-mono font-bold" style="color: ${computedColor}">${computedWavelength.toFixed(1)}</td>
+                    <td class="px-3 py-2 font-mono text-right text-slate-400">${computedEnergy.toExponential(1)}</td>
+                `;
+                
+                
+                historyList.prepend(row);
+            }
+    
+            
+            function drawAtom() {
+                if (!canvas.width) return;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const cx = canvas.width / 2;
+                const cy = canvas.height / 2;
+                const maxRadius = Math.min(cx, cy) - 40;
+                const step = maxRadius / 7; 
+
+                
+                const nucleusSize = 10 + (Z * 2); 
+                const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, nucleusSize + 5);
+                
+                // Color coding for nucleus
+                let nucleusColor = '#f59e0b'; // Orange (H)
+                if (Z === 2) nucleusColor = '#f43f5e'; // Rose (He)
+                if (Z === 3) nucleusColor = '#a855f7'; // Purple (Li)
+                if (Z === 4) nucleusColor = '#22c55e'; // Green (Be)
+
+                grad.addColorStop(0, '#fff');
+                grad.addColorStop(1, nucleusColor);
+                
+                ctx.beginPath();
+                ctx.arc(cx, cy, nucleusSize, 0, Math.PI * 2);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = nucleusColor;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Text inside nucleus
+                ctx.fillStyle = 'rgba(0,0,0,0.5)';
+                ctx.font = 'bold 10px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(Z === 1 ? "H" : `Z=${Z}`, cx, cy);
+    
+                // 2. Draw Orbits
+                for (let i = 1; i <= 7; i++) {
+                    ctx.beginPath();
+                    ctx.arc(cx, cy, i * step, 0, Math.PI * 2);
+                    
+                    if (i === n_final) {
+                        ctx.strokeStyle = '#38bdf8'; // Cyan for target
+                        ctx.lineWidth = 2;
+                    } else if (i === n_initial) {
+                        ctx.strokeStyle = '#fb7185'; // Rose for start
+                        ctx.lineWidth = 2;
+                    } else {
+                        ctx.strokeStyle = '#334155'; // Slate for others
+                        ctx.lineWidth = 1;
+                    }
+                    ctx.stroke();
+                }
+    
+                // 3. Determine Electron Position based on Animation State
+                let currentR = 0;
+                
+                if (animationState === 'idle') {
+                    currentR = n_initial * step;
+                    electronAngle += 0.01; // Orbit slowly
+                } else if (animationState === 'jumping') {
+                    const startR = n_initial * step;
+                    const endR = n_final * step;
+                    // Simple ease-in-out
+                    electronRadius += (endR - electronRadius) * 0.1;
+                    currentR = electronRadius;
+                    electronAngle += 0.05; // Spin faster during jump
+    
+                    // Check if close enough to switch state
+                    if (Math.abs(currentR - endR) < 1) {
+                        animationState = 'emitting';
+                        photonProgress = 0;
+                    }
+                } else if (animationState === 'emitting') {
+                    currentR = n_final * step;
+                    electronAngle += 0.01;
+                    drawPhoton(cx, cy, currentR, computedColor);
+                }
+    
+                // 4. Draw Electron
+                const ex = cx + Math.cos(electronAngle) * currentR;
+                const ey = cy + Math.sin(electronAngle) * currentR;
+    
+                ctx.beginPath();
+                ctx.arc(ex, ey, 6, 0, Math.PI * 2);
+                ctx.fillStyle = '#fff';
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = '#fff';
+                ctx.fill();
+                ctx.shadowBlur = 0;
+    
+                animationFrameId = requestAnimationFrame(drawAtom);
+            }
+    
+            function drawPhoton(cx, cy, startRadius, color) {
+                photonProgress += 4; // Speed of light (simulated)
+                
+                ctx.beginPath();
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 3;
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = color;
+    
+                // Draw a sine wave moving outwards
+                const waveLength = 20;
+                const amplitude = 5;
+                
+                // Random angle for photon emission
+                const angle = -Math.PI / 4; // Shoot towards top-right for visibility
+                
+                // Move the "window" of the wave
+                const headX = cx + Math.cos(angle) * (startRadius + photonProgress);
+                const headY = cy + Math.sin(angle) * (startRadius + photonProgress);
+                
+                // Tail follows
+                const tailX = cx + Math.cos(angle) * (startRadius + photonProgress - 50);
+                const tailY = cy + Math.sin(angle) * (startRadius + photonProgress - 50);
+    
+                // Don't draw if off screen
+                if (startRadius + photonProgress > Math.max(canvas.width, canvas.height)) {
+                    animationState = 'idle'; // Reset
+                    electronRadius = n_initial * (canvas.width/2/7); // Reset radius logic helper
+                    return;
+                }
+    
+                // Draw Wiggly line
+                ctx.moveTo(tailX, tailY);
+                for (let t = 0; t <= 50; t+=5) {
+                    const dist = startRadius + photonProgress - 50 + t;
+                    const baseX = cx + Math.cos(angle) * dist;
+                    const baseY = cy + Math.sin(angle) * dist;
+                    
+                    // Add sine wave offset perpendicular to direction
+                    const perpX = -Math.sin(angle);
+                    const perpY = Math.cos(angle);
+                    
+                    const waveOffset = Math.sin(t * 0.5) * amplitude;
+                    
+                    ctx.lineTo(baseX + perpX * waveOffset, baseY + perpY * waveOffset);
+                }
+                ctx.stroke();
+                ctx.shadowBlur = 0;
+            }
+    
+            // --- Event Listeners ---
+            selectElement.addEventListener('change', () => { // New Listener
+                calculate();
+                drawAtom();
+            });
+
+            sliderNf.addEventListener('input', () => {
+                calculate();
+                // Reset animation if user changes inputs
+                animationState = 'idle';
+            });
+            
+            sliderNi.addEventListener('input', () => {
+                calculate();
+                animationState = 'idle';
+            });
+    
+            btnAnimate.addEventListener('click', () => {
+                const step = (Math.min(canvas.width, canvas.height) - 40) / 7;
+                electronRadius = n_initial * step; // Start at Ni
+                animationState = 'jumping';
+                
+                // Log to history when animation is triggered (experiment "run")
+                addToHistory();
+            });
+
+            btnClearHistory.addEventListener('click', () => {
+                historyList.innerHTML = `
+                    <tr class="text-slate-500 italic text-center">
+                        <td colspan="3" class="py-3">Click "Trigger" to save data...</td>
+                    </tr>
+                `;
+            });
+    
+            // Init
+            resize();
+            calculate();
+        })();
+    </script>
+</body>
+</html>
+```
