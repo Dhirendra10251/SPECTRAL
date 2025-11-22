@@ -1,15 +1,15 @@
 # SPECTRAL
 First semester computational chemistry project
 
-⚛️ Spectral: Hydrogen Atom Simulator
+⚛️ **Spectral:** Hydrogen Atom Simulator
 
 Spectral is an interactive web-based simulation that visualizes the quantum mechanics of the Hydrogen atom. It calculates the emission spectra of hydrogen-like ions using the Rydberg Formula and animates electron transitions in real-time using the Bohr Model.
 
-🚀 Live Demo
+🚀**Live Demo:**
 
 [Insert your GitHub Pages link here once deployed, e.g., https://www.google.com/search?q=https://yourusername.github.io/spectral]
 
-🧪 The Science
+🧪 **The Science:**
 
 This project visualizes the Bohr Model of the atom. When an electron "jumps" from a high energy orbit ($n_i$) to a lower energy orbit ($n_f$), it loses energy. This energy is released as a photon of light.
 
@@ -25,7 +25,7 @@ $Z$: Atomic Number (Proton count)
 
 $n$: Principal Quantum Numbers (Orbits)
 
-✨ Key Features
+✨ **Key Features**
 
 Interactive Simulation: Drag sliders to change electron orbits and watch the atom react.
 
@@ -41,26 +41,25 @@ Spectral Series Detection: Automatically identifies Lyman, Balmer, Paschen, Brac
 
 Experiment History: detailed log of all transitions performed during the session.
 
-🛠️ How to Run Locally
+🛠️ **How to Run Locally**
 
 Clone the repository:
 
 git clone [https://github.com/your-username/spectral-app.git](https://github.com/your-username/spectral-app.git)
 
 
-Open the file:
+**Open the file:**
 Simply double-click index.html to open it in any modern web browser (Chrome, Edge, Firefox, Safari). No server installation required!
 
-👥 Project Team
+👥 **Project Team**
 
 This project was designed and built by:
 
-Dhirendra Kumar Thakur [25bai10251]
+**Dhirendra Kumar Thakur [25bai10251]**
 
-Mahi Vijay [25bai10333]
+**Mahi Vijay [25bai10333]**
 
-Ayesha [25bai10998]
+**Ayesha Raza [25bai10998]**
 
-📜 License
-
+📜 **License**
 This project is open source and available for educational use.
