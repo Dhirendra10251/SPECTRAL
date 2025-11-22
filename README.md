@@ -45,7 +45,7 @@ Experiment History: detailed log of all transitions performed during the session
 
 Clone the repository:
 
-git clone [https://github.com/your-username/spectral-app.git](https://github.com/your-username/spectral-app.git)
+git clone [https://github.com/Dhirendra10251/spectral-app.git](https://github.com/Dhirendra10251/spectral-app.git)
 
 
 **Open the file:**
