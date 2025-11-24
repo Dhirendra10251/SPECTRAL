@@ -6,6 +6,7 @@ First semester computational chemistry project
 Spectral is an interactive web-based simulation that visualizes the quantum mechanics of the Hydrogen atom. It calculates the emission spectra of hydrogen-like ions using the Rydberg Formula and animates electron transitions in real-time using the Bohr Model.
 
 🚀**Live Demo:**
+https://dhirendra10251.github.io/SPECTRAL/
 
 
 🧪 **The Science:**
